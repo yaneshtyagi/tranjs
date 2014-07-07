@@ -14,11 +14,36 @@ var tranTable = {
 $(document).ready(function(){
 	$("[data-tran]").each(function(){
 		var parentElement = $(this).prev();
+		var key = parentElement.attr("data-tran");
+		console.log(parentElement.prop('tagName'));
+
 		if(parentElement.prop('tagName') == 'P'){
-			console.log("setting p values = " + tranTable.title);
-			parentElement.text(tranTable.title);
+			console.log("setting p values = " + key + " => " + tranTable[key]);
+			parentElement.text(tranTable[key]);
 		}
-	})// $ each ends
+		if(parentElement.prop('tagName') == 'SPAN'){
+			console.log("setting p values = " + key + " => " + tranTable[key]);
+			parentElement.text(tranTable[key]);
+		}
+		if(parentElement.prop('tagName') == 'H1'){
+			console.log("setting p values = " + key + " => " + tranTable[key]);
+			parentElement.text(tranTable[key]);
+		}
+		if(parentElement.prop('tagName') == 'LABEL'){
+			console.log("setting p values = " + key + " => " + tranTable[key]);
+			parentElement.text(tranTable[key]);
+		}
+		if(parentElement.prop('tagName') == 'INPUT'){
+			console.log("setting p values = " + key + " => " + tranTable[key]);
+			parentElement.attr('placeholder', tranTable[key]);
+		}
+		if(parentElement.prop('tagName') == 'BUTTON'){
+			console.log("setting p values = " + key + " => " + tranTable[key]);
+			parentElement.text(tranTable[key]);
+		}
+
+
+		})// $ each ends
 });//ready function ends
 
 
