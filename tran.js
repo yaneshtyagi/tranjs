@@ -24,37 +24,25 @@ $(document).ready(function(){
 	var tranTable = hi_in;
 
 	$("[data-tran]").each(function(){
-		var parentElement = $(this).prev();
-		var key = parentElement.attr("data-tran");
+		var parentElement = $(this),
+		    key = parentElement.attr("data-tran"),
+		    elementType = 'value';
 		console.log(parentElement.prop('tagName'));
-
-		if(parentElement.prop('tagName') == 'P'){
-			parentElement.text(tranTable[key]);
+		
+		/* 
+		For all html elements of type input
+		*/
+		if(parentElement.prop('tagName').toLowerCase() == 'input'){
+		   elementType = ( parentElement.prop('type').toLowerCase() == 'button' ) ? 'value' : 'placeholder';
+		   parentElement.prop(elementType, tranTable[key]);
 		}
-		if(parentElement.prop('tagName') == 'SPAN'){
-			parentElement.text(tranTable[key]);
+		/*
+		For all other html elements
+		*/
+		else{
+		    parentElement.text(tranTable[key]);	
 		}
-		if(parentElement.prop('tagName') == 'H1'){
-			parentElement.text(tranTable[key]);
-		}
-		if(parentElement.prop('tagName') == 'LABEL'){
-			parentElement.text(tranTable[key]);
-		}
-		if(parentElement.prop('tagName') == 'BUTTON'){
-			parentElement.text(tranTable[key]);
-		}
-		if(parentElement.prop('tagName') == 'INPUT'){
-			console.log("setting p values = " + key + " => " + tranTable[key]);
-			
-			if(parentElement.prop('type').toLowerCase() == 'text')
-				parentElement.attr('placeholder', tranTable[key]);
-			
-			if(parentElement.prop('type').toLowerCase() == 'button')
-				parentElement.prop('value', tranTable[key]);
-		}
-
-
-		})// $ each ends
+	})// $ each ends
 });//ready function ends
 
 
