@@ -26,7 +26,7 @@ $(document).ready(function(){
 	$("[data-tran]").each(function(){
 		var parentElement = $(this),
 		    key = parentElement.attr("data-tran"),
-		    elementType = 'value';
+		    elementType = '';
 		console.log(parentElement.prop('tagName'));
 		
 		/* 
