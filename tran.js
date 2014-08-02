@@ -1,49 +1,56 @@
-var activeLanguage = "hi-in";
+     $(document).ready(function () {
+        //Call the translate() method
+        tran.translate();
+    }); 
 
-//hi-in mimic
-var hi_in = {
-	"title": "यह शीर्षक है",
-	"subtitle": "यह उपशीर्षक है",
-	"introduction": "यह शुरूआत है",
-	"username": "यह उपयोगकर्ता नाम है",
-	"username-placeholder": "उपयोगकर्ता नाम दर्ज करें",
-	"submit": "भेजें"
-};
+    var tran = {
+        translate: function () {
+            var activeLanguage = 'hi-in',
+                jsonLangFile = activeLanguage + '.json';
 
-var en_us = {
-	"title": "This is title",
-	"subtitle": "This is subtitle",
-	"introduction": "This is introduction",
-	"username": "This is username",
-	"username-placeholder": "Enter username",
-	"submit": "Submit"
-};
+            var jqxhr = $.getJSON(jsonLangFile)
 
+               .done(function (data) {
+                   tran.populateText(data);
+               })//end done
 
-$(document).ready(function(){
-	var tranTable = hi_in;
+            //Handle failures
+              .fail(function () {
+                  console.log("Oops!! There was an error in processing the request");
+              }); //end fail and this also ends the getJSON method
 
-	$("[data-tran]").each(function(){
-		var parentElement = $(this),
-		    key = parentElement.attr("data-tran"),
-		    elementType = '';
-		console.log(parentElement.prop('tagName'));
-		
-		/* 
-		For all html elements of type input
-		*/
-		if(parentElement.prop('tagName').toLowerCase() == 'input'){
-		   elementType = ( parentElement.prop('type').toLowerCase() == 'button' ) ? 'value' : 'placeholder';
-		   parentElement.prop(elementType, tranTable[key]);
-		}
-		/*
-		For all other html elements
-		*/
-		else{
-		    parentElement.text(tranTable[key]);	
-		}
-	})// $ each ends
-});//ready function ends
+        }, //translate function ends
+
+        populateText: function (data) {
+            $("[data-tran]").each(function () {
+                var parentElement 		= $(this),
+            		    key 		= parentElement.attr("data-tran"),
+            		    elementType 	= '',
+                            derivedElementType  = '';
+                /* 
+                For all html elements of type input
+                */
+                if (parentElement.prop('tagName').toLowerCase() == 'input') {
+                    elementType = parentElement.prop('type').toLowerCase();
+                    derivedElementType = (elementType == 'button' || elementType == 'submit') ? 'value' : 'placeholder';
+
+                    //If the value for the key does not exist in the language file, the key name is returned
+                    if (data[key] == undefined) {
+                        parentElement.prop(derivedElementType, key);
+                    }
+
+                    //Get the value of key from the language file
+                    else parentElement.prop(derivedElementType, data[key]);
+                }
+                /*
+                For all other html elements
+                */
+                else {
+                    parentElement.text(data[key]);
+                }
+            })//$.each ends
+        } //populateText function ends
+    };
 
 
 
