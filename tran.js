@@ -1,61 +1,110 @@
-var activeLanguage = "hi-in";
+var defaultLangFile     = "en-us.json",
+    arrDefaultLang      = [],
+    defaultLangValues   = {};
 
-//hi-in mimic
-var hi_in = {
-	"title": "यह शीर्षक है",
-	"subtitle": "यह उपशीर्षक है",
-	"introduction": "यह शुरूआत है",
-	"username": "यह उपयोगकर्ता नाम है",
-	"username-placeholder": "उपयोगकर्ता नाम दर्ज करें",
-	"submit": "भेजें"
-};
+    //Call the translate() method
+    $(document).ready(function () {
+        tran.translate();
+    });
 
-var en_us = {
-	"title": "This is title",
-	"subtitle": "This is subtitle",
-	"introduction": "This is introduction",
-	"username": "This is username",
-	"username-placeholder": "Enter username",
-	"submit": "Submit"
-};
+    var tran = {
+        //Load default language file(english)
+        getDefaultFile: function () {
+            return $.getJSON(defaultLangFile).pipe(function (defaultContents, status, jqXHR) {
+                return defaultContents;
+            });
+        },
 
+        //Store the contents of default language file in an array
+        storeDefaultFileContents: function (defaultContents) {
+            arrDefaultLang = defaultContents;
+            return arrDefaultLang;
+        },
 
-$(document).ready(function(){
-	var tranTable = hi_in;
+        //Translate language
+        translate: function () {
+            var activeLangFile = 'hi-in.json';
+            
+            //Call the ajax function to load the json lang file
+            var jqxhr = $.getJSON(activeLangFile);
 
-	$("[data-tran]").each(function(){
-		var parentElement = $(this),
-		    key = parentElement.attr("data-tran"),
-		    elementType = '';
-		console.log(parentElement.prop('tagName'));
-		
-		/* 
-		For all html elements of type input
-		*/
-		if(parentElement.prop('tagName').toLowerCase() == 'input'){
-		   elementType = ( parentElement.prop('type').toLowerCase() == 'button' ) ? 'value' : 'placeholder';
-		   parentElement.prop(elementType, tranTable[key]);
-		}
-		/*
-		For all other html elements
-		*/
-		else{
-		    parentElement.text(tranTable[key]);	
-		}
-	})// $ each ends
-});//ready function ends
+            //Done function for successful response
+            jqxhr.done(function (data) {
+                // Call the function populateText to set the language text
+                tran.populateText(data);
+            }); //end done
 
+            //Handle failures
+            jqxhr.fail(function () {
+                console.log("Oops!! There was an error in processing the request");
+            }); //end fail
 
+        }, //end translate
 
+        //Populate the language text
+        populateText: function (data) {
+            $("[data-tran]").each(function () {
+                var parentElement = $(this),
+            		    key = parentElement.attr("data-tran"),
+            		    elementType = '',
+                        derivedElementType = '',
+                        labelText = '';
+                /* 
+                For all html elements of type input
+                */
+                if (parentElement.prop('tagName').toLowerCase() == 'input') {
+                    elementType = parentElement.prop('type').toLowerCase();
+                    derivedElementType = (elementType == 'button' || elementType == 'submit') ? 'value' : 'placeholder';
+                    /*
+                    If the value for the key does not exist in the selected language file,
+                    get the contents from the default language file(english)
+                    */
+                    if (data[key] == undefined) {
+                        
+                        var fnGetDefaultFile = tran.getDefaultFile(),
+                            defaultLangValues = {};
 
-/*
+                        fnGetDefaultFile.done(function (defaultContents) {
+                            defaultLangValues = tran.storeDefaultFileContents(defaultContents);
 
+                           //Get the value if the key exists, else set it to key
+                            labelText = (defaultLangValues[key] == undefined) ? key : defaultLangValues[key];
+                            parentElement.prop(derivedElementType, labelText);
+                        });// end done function
+                    }
+                    else {
+                        labelText = data[key];
+                        parentElement.prop(derivedElementType, labelText);
+                    }
+                }
+                /*
+                For all other html elements
+                */
+                else {
+                    /*
+                    If the value for the key does not exist in the selected language file,
+                    get the contents from the default language file(english)
+                    */
+                    if (data[key] == undefined) {
+                        var fnGetDefaultFile = tran.getDefaultFile(),
+                            defaultLangValues = {};
 
-*/
+                        fnGetDefaultFile.done(function (defaultContents) {
+                            defaultLangValues = tran.storeDefaultFileContents(defaultContents);
 
-
-
-
-
-
-
+                            //Get the value if the key exists, else set it to key
+                            labelText = (defaultLangValues[key] == undefined) ? key : defaultLangValues[key];
+                            parentElement.text(labelText);
+                        });
+                    }
+                    /*
+                     Populate the language text from the selected language file
+                    */
+                    else {
+                        labelText = data[key];
+                        parentElement.text(labelText);
+                    } 
+                }
+            })// end each
+        } //end populateText
+    };
